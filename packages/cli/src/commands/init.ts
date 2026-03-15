@@ -142,6 +142,26 @@ export const initCommand = new Command("init")
 
     console.log("");
 
+    // ── Step: Patch index.css ─────────────────────────────
+    const cssFiles = [
+      path.join(cwd, "src", "index.css"),
+      path.join(cwd, "src", "app.css"),
+      path.join(cwd, "index.css"),
+    ].filter(fs.existsSync);
+
+    if (cssFiles.length > 0) {
+      const cssPath = cssFiles[0]!;
+      const cssContent = await fs.readFile(cssPath, "utf-8");
+
+      if (!cssContent.includes("@ron/ui")) {
+        const updated = cssContent.trimEnd() + '\n@plugin "@ron/ui";\n';
+        await fs.writeFile(cssPath, updated);
+        console.log(
+          pc.green("✔") + " @plugin added to " + path.relative(cwd, cssPath),
+        );
+      }
+    }
+
     // ── Step 4: Scaffold admin.config.ts ────────────────────
     const configPath = path.join(cwd, "admin.config.ts");
 

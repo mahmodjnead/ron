@@ -1,0 +1,83 @@
+// src/plugin/components/sidebar.ts
+export const sidebarStyles = {
+  ".ron-sidebar": {
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    backgroundColor: "rgb(var(--ron-sidebar-bg))",
+    borderRight: "1px solid rgb(var(--ron-sidebar-border))",
+    transition: "width 300ms ease",
+    overflow: "hidden",
+    width: "var(--ron-sidebar-width)",
+  },
+  ".ron-sidebar-collapsed": {
+    width: "var(--ron-sidebar-width-collapsed)",
+  },
+  ".ron-sidebar-header": {
+    display: "flex",
+    alignItems: "center",
+    height: "4rem",
+    padding: "0 1rem",
+    gap: "0.75rem",
+    borderBottom: "1px solid rgb(var(--ron-sidebar-border))",
+    flexShrink: "0",
+  },
+  ".ron-sidebar-nav": {
+    flex: "1",
+    overflowY: "auto",
+    padding: "1rem 0.75rem",
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.25rem",
+  },
+  ".ron-sidebar-footer": {
+    flexShrink: "0",
+    borderTop: "1px solid rgb(var(--ron-sidebar-border))",
+    padding: "0.75rem",
+  },
+  ".ron-nav-item": {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+    padding: "0.5rem 0.75rem",
+    borderRadius: "var(--ron-radius)",
+    fontSize: "0.875rem",
+    fontWeight: "500",
+    color: "rgb(var(--ron-text-secondary))",
+    cursor: "pointer",
+    transition: "all 150ms",
+    border: "none",
+    width: "100%",
+    textAlign: "left",
+    backgroundColor: "transparent",
+    "&:hover": {
+      backgroundColor: "rgb(var(--ron-surface-hover))",
+      color: "rgb(var(--ron-text))",
+    },
+  },
+  ".ron-nav-item-active": {
+    backgroundColor: "rgb(var(--ron-surface-active))",
+    color: "rgb(var(--ron-primary))",
+    "&:hover": {
+      backgroundColor: "rgb(var(--ron-surface-active))",
+    },
+  },
+  ".ron-nav-item-icon": {
+    flexShrink: "0",
+    width: "1rem",
+    height: "1rem",
+    color: "rgb(var(--ron-text-muted))",
+  },
+  ".ron-nav-item-active .ron-nav-item-icon": {
+    color: "rgb(var(--ron-primary))",
+  },
+  ".ron-nav-group-children": {
+    marginTop: "0.25rem",
+    marginLeft: "1rem",
+    paddingLeft: "0.75rem",
+    borderLeft: "1px solid rgb(var(--ron-border))",
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.25rem",
+  },
+};

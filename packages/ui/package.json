@@ -1,0 +1,53 @@
+{
+  "name": "@ron/ui",
+  "version": "0.0.1",
+  "description": "Ron UI — headless admin components",
+  "main": "./dist/plugin.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/plugin.js"
+    },
+    "./components": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./plugin": {
+      "import": "./dist/plugin.mjs",
+      "require": "./dist/plugin.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup --config tsup.components.ts && tsup --config tsup.plugin.ts",
+    "dev": "tsup --config tsup.components.ts --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@ron/core": "workspace:*",
+    "@tanstack/react-table": "^8.0.0",
+    "clsx": "^2.1.0",
+    "lucide-react": "^0.400.0",
+    "tailwind-merge": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tailwindcss": "^4.2.1",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  }
+}
