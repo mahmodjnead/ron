@@ -2,6 +2,7 @@
 import { program } from "commander";
 import pc from "picocolors";
 import { initCommand } from "./commands/init";
+import { syncCommand } from "./commands/sync";
 
 const RON_ASCII = `
 ${pc.blue("  ██████╗  ██████╗ ███╗   ██╗")}
@@ -23,5 +24,6 @@ program
 
 // Register commands
 program.addCommand(initCommand);
+program.addCommand(syncCommand);
 
 program.parse(process.argv);

@@ -20,6 +20,9 @@ importers:
 
   apps/playground:
     dependencies:
+      '@ron/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       react:
         specifier: ^19.2.0
         version: 19.2.4
