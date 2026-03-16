@@ -3,7 +3,7 @@ import { Command } from "commander";
 import pc from "picocolors";
 import path from "path";
 import fs from "fs-extra";
-import { resolvePermissions, validateConfig } from "@ron/core";
+import { resolvePermissions, validateConfig } from "@ronjs/core";
 import {
   permissionMatrixTemplate,
   routeManifestTemplate,

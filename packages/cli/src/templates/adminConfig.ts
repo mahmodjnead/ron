@@ -18,7 +18,7 @@ export function adminConfigTemplate(opts: {
       "// Implement getCurrentUser to return the current user with their role",
   };
 
-  return `import { defineConfig } from "@ron/core";
+  return `import { defineConfig } from "@ronjs/core";
 
 export default defineConfig({
   branding: {

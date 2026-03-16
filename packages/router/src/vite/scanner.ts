@@ -4,6 +4,7 @@ import path from "path";
 import type { RonRoute } from "../types";
 
 const SPECIAL_FILES = ["_layout", "_loading", "_error", "_403"];
+const SPECIAL_DIRS = ["_403", "_loading", "_error"];
 const DYNAMIC_REGEX = /^\[([^\]]+)\]$/;
 
 /**
@@ -103,7 +104,8 @@ export function scanPages(
     const name = entry.name.replace(/\.(tsx|ts|jsx|js)$/, "");
 
     if (entry.isDirectory()) {
-      // Recurse into subdirectory
+      // Skip special directories
+      if (SPECIAL_DIRS.includes(entry.name)) continue;
       routes.push(...scanPages(fullPath, pagesDir, basePath));
       continue;
     }

@@ -1,4 +1,4 @@
-// src/commands/init.ts
+// packages/cli/src/commands/init.ts
 import { Command } from "commander";
 import prompts from "prompts";
 import pc from "picocolors";
@@ -8,52 +8,85 @@ import { execSync } from "child_process";
 import { detectProject } from "../detectors/detectProject";
 import { adminConfigTemplate } from "../templates/adminConfig";
 import { generateAdminFiles } from "../generators/generateAdminFiles";
+import {
+  indexHtmlTemplate,
+  packageJsonTemplate,
+  tsconfigTemplate,
+  tsconfigAppTemplate,
+  tsconfigNodeTemplate,
+  viteConfigTemplate,
+  indexCssTemplate,
+  mainTsxTemplate,
+  ronDtsTemplate,
+  gitignoreTemplate,
+} from "../templates/viteProject";
+import {
+  rootLayoutTemplate,
+  dashboardPageTemplate,
+  notFoundPageTemplate,
+  sampleUsersPageTemplate,
+} from "../templates/pages";
 
+// ── Detect if folder is empty ─────────────────────────────
+function isFolderEmpty(dir: string): boolean {
+  if (!fs.existsSync(dir)) return true;
+  const files = fs
+    .readdirSync(dir)
+    .filter((f) => !["node_modules", ".git", ".DS_Store"].includes(f));
+  return files.length === 0;
+}
+
+// ── Get package manager install command ───────────────────
+function getInstallCmd(pm: string): string {
+  switch (pm) {
+    case "pnpm":
+      return "pnpm install";
+    case "yarn":
+      return "yarn";
+    case "bun":
+      return "bun install";
+    default:
+      return "npm install";
+  }
+}
+
+function getRunCmd(pm: string, script: string): string {
+  switch (pm) {
+    case "pnpm":
+      return `pnpm ${script}`;
+    case "yarn":
+      return `yarn ${script}`;
+    case "bun":
+      return `bun run ${script}`;
+    default:
+      return `npm run ${script}`;
+  }
+}
+
+// ─────────────────────────────────────────────────────────
 export const initCommand = new Command("init")
-  .description("Initialize Ron in your React project")
+  .description("Initialize Ron — create a new project or add to existing")
   .option("--cwd <path>", "Working directory", process.cwd())
   .action(async (options) => {
     const cwd = path.resolve(options.cwd);
+    const isEmpty = isFolderEmpty(cwd);
 
-    console.log(pc.dim("Scanning your project...\n"));
+    console.log(
+      pc.dim(
+        isEmpty
+          ? "Empty folder detected — creating new Ron project...\n"
+          : "Existing project detected — adding Ron...\n",
+      ),
+    );
 
-    // ── Step 1: Detect environment ───────────────────────────
-    const project = detectProject(cwd);
-
-    // Validation
-    if (!project.hasReact) {
-      console.error(pc.red("✗ React not found. Ron requires a React project."));
-      process.exit(1);
-    }
-    if (!project.hasTypeScript) {
-      console.error(pc.red("✗ TypeScript not found. Ron requires TypeScript."));
-      process.exit(1);
-    }
-    if (!project.hasTailwind) {
-      console.warn(
-        pc.yellow("⚠ Tailwind CSS not detected. Ron works best with Tailwind."),
-      );
-    }
-
-    // Show what was detected
-    console.log(pc.green("✔") + " React + TypeScript detected");
-    if (project.hasTailwind)
-      console.log(pc.green("✔") + " Tailwind CSS detected");
-    if (project.router !== "unknown")
-      console.log(pc.green("✔") + ` Router detected: ${project.router}`);
-    if (project.auth !== "custom")
-      console.log(pc.green("✔") + ` Auth detected: ${project.auth}`);
-
-    console.log("");
-
-    // ── Step 2: Prompts ──────────────────────────────────────
-    const answers = await prompts(
+    // ── Shared prompts ───────────────────────────────────
+    const shared = await prompts(
       [
         {
           type: "text",
           name: "projectName",
-          message: "What is your admin panel name?",
-          initial: "My Admin",
+          message: "Project name?",
+          initial: path.basename(cwd) || "my-admin",
         },
         {
           type: "text",
@@ -63,34 +96,17 @@ export const initCommand = new Command("init")
           validate: (v: string) =>
             v.trim().length > 0 || "At least one role is required",
         },
-        ...(project.router === "unknown"
-          ? [
-              {
-                type: "select" as const,
-                name: "router",
-                message: "Which router are you using?",
-                choices: [
-                  { title: "React Router v6", value: "react-router" },
-                  { title: "TanStack Router", value: "tanstack-router" },
-                ],
-              },
-            ]
-          : []),
-        ...(project.auth === "custom"
-          ? [
-              {
-                type: "select" as const,
-                name: "auth",
-                message: "Which auth provider are you using?",
-                choices: [
-                  { title: "Clerk", value: "clerk" },
-                  { title: "NextAuth", value: "next-auth" },
-                  { title: "Supabase", value: "supabase" },
-                  { title: "Custom / DIY", value: "custom" },
-                ],
-              },
-            ]
-          : []),
+        {
+          type: "select",
+          name: "auth",
+          message: "Auth provider?",
+          choices: [
+            { title: "Clerk", value: "clerk" },
+            { title: "NextAuth", value: "next-auth" },
+            { title: "Supabase", value: "supabase" },
+            { title: "Custom / DIY", value: "custom" },
+          ],
+        },
       ],
       {
         onCancel: () => {
@@ -100,29 +116,243 @@ export const initCommand = new Command("init")
       },
     );
 
-    const projectName = answers.projectName as string;
-    const roles = (answers.roles as string)
+    const projectName = shared.projectName as string;
+    const roles = (shared.roles as string)
       .split(",")
       .map((r: string) => r.trim())
       .filter(Boolean);
-    const router = (answers.router ?? project.router) as string;
-    const auth = (answers.auth ?? project.auth) as string;
+    const auth = shared.auth as string;
 
-    console.log("");
+    // ── CREATE mode — new project ────────────────────────
+    if (isEmpty) {
+      const createAnswers = await prompts(
+        [
+          {
+            type: "select",
+            name: "pm",
+            message: "Package manager?",
+            choices: [
+              { title: "npm", value: "npm" },
+              { title: "pnpm", value: "pnpm" },
+              { title: "yarn", value: "yarn" },
+              { title: "bun", value: "bun" },
+            ],
+          },
+          {
+            type: "select",
+            name: "template",
+            message: "Template?",
+            choices: [
+              {
+                title: "Minimal",
+                value: "minimal",
+                description: "Dashboard + layout only",
+              },
+              {
+                title: "Full",
+                value: "full",
+                description: "Dashboard + Users + Settings sample pages",
+              },
+            ],
+          },
+          {
+            type: "confirm",
+            name: "git",
+            message: "Initialize git repository?",
+            initial: true,
+          },
+        ],
+        {
+          onCancel: () => {
+            console.log(pc.yellow("\nSetup cancelled."));
+            process.exit(0);
+          },
+        },
+      );
 
-    // ── Step 3: Install dependencies ────────────────────────
-    console.log(pc.dim("Installing dependencies..."));
+      const pm = createAnswers.pm as string;
+      const template = createAnswers.template as string;
+      const git = createAnswers.git as boolean;
 
-    const deps = [
-      "@ron/core",
-      "@tanstack/react-query",
-      "react-hook-form",
-      "zod",
-      "lucide-react",
-    ].join(" ");
+      console.log("");
+      console.log(pc.dim("Scaffolding project..."));
 
-    try {
-      // Detect package manager
+      // ── Create folder structure ────────────────────────
+      await fs.ensureDir(cwd);
+      await fs.ensureDir(path.join(cwd, "src", "admin", "pages", "dashboard"));
+      await fs.ensureDir(path.join(cwd, "src", "admin", "pages", "_403"));
+      if (template === "full") {
+        await fs.ensureDir(path.join(cwd, "src", "admin", "pages", "users"));
+        await fs.ensureDir(path.join(cwd, "src", "admin", "pages", "settings"));
+      }
+      await fs.ensureDir(path.join(cwd, "src", "admin", "_generated"));
+      await fs.ensureDir(path.join(cwd, "src", "admin", "hooks"));
+
+      // ── Write project files ────────────────────────────
+      await fs.writeFile(
+        path.join(cwd, "index.html"),
+        indexHtmlTemplate(projectName),
+      );
+      await fs.writeFile(
+        path.join(cwd, "package.json"),
+        packageJsonTemplate(projectName, pm),
+      );
+      await fs.writeFile(path.join(cwd, "tsconfig.json"), tsconfigTemplate());
+      await fs.writeFile(
+        path.join(cwd, "tsconfig.app.json"),
+        tsconfigAppTemplate(),
+      );
+      await fs.writeFile(
+        path.join(cwd, "tsconfig.node.json"),
+        tsconfigNodeTemplate(),
+      );
+      await fs.writeFile(
+        path.join(cwd, "vite.config.ts"),
+        viteConfigTemplate(),
+      );
+      await fs.writeFile(path.join(cwd, ".gitignore"), gitignoreTemplate());
+      await fs.writeFile(
+        path.join(cwd, "src", "index.css"),
+        indexCssTemplate(),
+      );
+      await fs.writeFile(
+        path.join(cwd, "src", "main.tsx"),
+        mainTsxTemplate(auth),
+      );
+      await fs.writeFile(path.join(cwd, "src", "ron.d.ts"), ronDtsTemplate());
+
+      console.log(pc.green("✔") + " Project files created");
+
+      // ── Write admin.config.ts ──────────────────────────
+      await fs.writeFile(
+        path.join(cwd, "admin.config.ts"),
+        adminConfigTemplate({ projectName, auth: auth as any, roles }),
+      );
+      console.log(pc.green("✔") + " admin.config.ts created");
+
+      // ── Write pages ────────────────────────────────────
+      await fs.writeFile(
+        path.join(cwd, "src", "admin", "pages", "_layout.tsx"),
+        rootLayoutTemplate(projectName),
+      );
+      await fs.writeFile(
+        path.join(cwd, "src", "admin", "pages", "dashboard", "index.tsx"),
+        dashboardPageTemplate(projectName),
+      );
+      await fs.writeFile(
+        path.join(cwd, "src", "admin", "pages", "_403", "index.tsx"),
+        notFoundPageTemplate(),
+      );
+
+      if (template === "full") {
+        await fs.writeFile(
+          path.join(cwd, "src", "admin", "pages", "users", "index.tsx"),
+          sampleUsersPageTemplate(),
+        );
+        await fs.writeFile(
+          path.join(cwd, "src", "admin", "pages", "settings", "index.tsx"),
+          `export default function SettingsPage() {
+  return (
+    <div>
+      <h1 style={{ color: "var(--ron-text)", fontSize: "1.5rem", fontWeight: 700 }}>
+        Settings
+      </h1>
+      <p style={{ color: "var(--ron-text-secondary)", marginTop: "0.5rem" }}>
+        Configure your application settings here.
+      </p>
+    </div>
+  );
+}
+`,
+        );
+      }
+
+      console.log(pc.green("✔") + " Pages scaffolded");
+
+      // ── Write generated files ──────────────────────────
+      await generateAdminFiles({
+        cwd,
+        srcDir: "src",
+        roles,
+        projectName,
+      });
+      console.log(pc.green("✔") + " Permission matrix generated");
+
+      // ── Git init ───────────────────────────────────────
+      if (git) {
+        try {
+          execSync("git init", { cwd, stdio: "pipe" });
+          execSync("git add .", { cwd, stdio: "pipe" });
+          execSync(`git commit -m "chore: init Ron project"`, {
+            cwd,
+            stdio: "pipe",
+          });
+          console.log(pc.green("✔") + " Git repository initialized");
+        } catch {
+          console.log(pc.yellow("⚠") + " Git init skipped");
+        }
+      }
+
+      // ── Install dependencies ───────────────────────────
+      console.log("");
+      console.log(pc.dim(`Installing dependencies with ${pm}...`));
+
+      try {
+        execSync(getInstallCmd(pm), { cwd, stdio: "inherit" });
+        console.log(pc.green("✔") + " Dependencies installed");
+      } catch {
+        console.log(
+          pc.yellow("⚠ Could not install dependencies. Run manually:") +
+            `\n  cd ${path.basename(cwd)} && ${getInstallCmd(pm)}`,
+        );
+      }
+
+      // ── Done ───────────────────────────────────────────
+      console.log(`
+${pc.green("─────────────────────────────────────")}
+  ${pc.bold("Ron project ready.")} 🎉
+
+  ${pc.cyan("cd")} ${path.basename(cwd)}
+  ${pc.cyan(getRunCmd(pm, "dev"))}
+
+  ${pc.dim("Then visit")} ${pc.bold("http://localhost:5173/admin")}
+
+  ${pc.dim("Next steps:")}
+  ${pc.cyan("1.")} Open ${pc.bold("admin.config.ts")} and implement ${pc.bold("getCurrentUser")}
+  ${pc.cyan("2.")} Add resources and permissions
+  ${pc.cyan("3.")} Run ${pc.bold("ron sync")} after config changes
+${pc.green("─────────────────────────────────────")}
+`);
+
+      // ── ADD mode — existing project ──────────────────────
+    } else {
+      const project = detectProject(cwd);
+
+      if (!project.hasReact) {
+        console.error(pc.red("✗ React not found."));
+        process.exit(1);
+      }
+      if (!project.hasTypeScript) {
+        console.error(pc.red("✗ TypeScript not found."));
+        process.exit(1);
+      }
+
+      console.log(pc.green("✔") + " React + TypeScript detected");
+      if (project.hasTailwind)
+        console.log(pc.green("✔") + " Tailwind CSS detected");
+      console.log("");
+
+      // Install deps
+      const deps = [
+        "@ronjs/core",
+        "@ronjs/ui",
+        "@ronjs/router",
+        "@tanstack/react-query",
+        "react-hook-form",
+        "zod",
+        "lucide-react",
+      ].join(" ");
+
       const pm = fs.existsSync(path.join(cwd, "pnpm-lock.yaml"))
         ? "pnpm add"
         : fs.existsSync(path.join(cwd, "yarn.lock"))
@@ -131,92 +361,97 @@ export const initCommand = new Command("init")
             ? "bun add"
             : "npm install";
 
-      execSync(`${pm} ${deps}`, { cwd, stdio: "pipe" });
-      console.log(pc.green("✔") + " Dependencies installed");
-    } catch {
-      console.warn(
-        pc.yellow("⚠ Could not auto-install dependencies. Run manually:") +
-          `\n  npm install ${deps}`,
-      );
-    }
-
-    console.log("");
-
-    // ── Step: Patch index.css ─────────────────────────────
-    const cssFiles = [
-      path.join(cwd, "src", "index.css"),
-      path.join(cwd, "src", "app.css"),
-      path.join(cwd, "index.css"),
-    ].filter(fs.existsSync);
-
-    if (cssFiles.length > 0) {
-      const cssPath = cssFiles[0]!;
-      const cssContent = await fs.readFile(cssPath, "utf-8");
-
-      if (!cssContent.includes("@ron/ui")) {
-        const updated = cssContent.trimEnd() + '\n@plugin "@ron/ui";\n';
-        await fs.writeFile(cssPath, updated);
-        console.log(
-          pc.green("✔") + " @plugin added to " + path.relative(cwd, cssPath),
+      console.log(pc.dim("Installing dependencies..."));
+      try {
+        execSync(`${pm} ${deps}`, { cwd, stdio: "pipe" });
+        console.log(pc.green("✔") + " Dependencies installed");
+      } catch {
+        console.warn(
+          pc.yellow("⚠ Could not auto-install. Run manually:") +
+            `\n  ${pm} ${deps}`,
         );
       }
-    }
 
-    // ── Step 4: Scaffold admin.config.ts ────────────────────
-    const configPath = path.join(cwd, "admin.config.ts");
-
-    if (fs.existsSync(configPath)) {
-      const { overwrite } = await prompts({
-        type: "confirm",
-        name: "overwrite",
-        message: "admin.config.ts already exists. Overwrite?",
-        initial: false,
-      });
-      if (!overwrite) {
-        console.log(pc.dim("Skipping admin.config.ts"));
-      } else {
+      // Scaffold admin.config.ts
+      const configPath = path.join(cwd, "admin.config.ts");
+      if (!fs.existsSync(configPath)) {
         await fs.writeFile(
           configPath,
           adminConfigTemplate({ projectName, auth: auth as any, roles }),
         );
         console.log(pc.green("✔") + " admin.config.ts created");
       }
-    } else {
+
+      // Generate admin files
+      console.log(pc.dim("Generating admin files..."));
+      await generateAdminFiles({
+        cwd,
+        srcDir: project.srcDir,
+        roles,
+        projectName,
+      });
+
+      // Scaffold pages
+      const pagesDir = path.join(cwd, project.srcDir, "admin", "pages");
+      await fs.ensureDir(path.join(pagesDir, "dashboard"));
       await fs.writeFile(
-        configPath,
-        adminConfigTemplate({ projectName, auth: auth as any, roles }),
+        path.join(pagesDir, "_layout.tsx"),
+        rootLayoutTemplate(projectName),
       );
-      console.log(pc.green("✔") + " admin.config.ts created");
-    }
+      await fs.writeFile(
+        path.join(pagesDir, "dashboard", "index.tsx"),
+        dashboardPageTemplate(projectName),
+      );
+      await fs.writeFile(
+        path.join(pagesDir, "_403", "index.tsx"),
+        notFoundPageTemplate(),
+      );
 
-    // ── Step 5: Generate /src/admin/** ───────────────────────
-    console.log(pc.dim("Generating admin files..."));
+      // Patch index.css
+      const cssFiles = [
+        path.join(cwd, "src", "index.css"),
+        path.join(cwd, "src", "app.css"),
+        path.join(cwd, "index.css"),
+      ].filter(fs.existsSync);
 
-    await generateAdminFiles({
-      cwd,
-      srcDir: project.srcDir,
-      roles,
-      projectName,
-    });
+      if (cssFiles.length > 0) {
+        const cssPath = cssFiles[0]!;
+        const cssContent = await fs.readFile(cssPath, "utf-8");
+        if (!cssContent.includes("@ronjs/ui")) {
+          await fs.writeFile(
+            cssPath,
+            cssContent.trimEnd() + '\n@plugin "@ronjs/ui";\n',
+          );
+          console.log(pc.green("✔") + " @plugin added to index.css");
+        }
+      }
 
-    console.log(pc.green("✔") + " src/admin/_generated/");
-    console.log(pc.green("✔") + " src/admin/hooks/");
-    console.log(pc.green("✔") + " src/admin/components/guards/");
-    console.log(pc.green("✔") + " src/admin/pages/");
-    console.log(pc.green("✔") + " src/admin/index.tsx");
+      // Patch vite.config.ts
+      const viteConfigPath = path.join(cwd, "vite.config.ts");
+      if (fs.existsSync(viteConfigPath)) {
+        const viteContent = await fs.readFile(viteConfigPath, "utf-8");
+        if (!viteContent.includes("@ronjs/router")) {
+          console.log(
+            pc.yellow("⚠ Please add ronRouter plugin to vite.config.ts:") +
+              `\n  import { ronRouter } from "@ronjs/router/vite";` +
+              `\n  plugins: [..., ronRouter({ pagesDir: "src/admin/pages", basePath: "/admin" })]`,
+          );
+        }
+      }
 
-    // ── Done ─────────────────────────────────────────────────
-    console.log(`
+      // Add ron.d.ts
+      await fs.writeFile(path.join(cwd, "src", "ron.d.ts"), ronDtsTemplate());
+
+      console.log(`
 ${pc.green("─────────────────────────────────────")}
   ${pc.bold("Ron is ready.")} 🎉
 
   ${pc.dim("Next steps:")}
-  ${pc.cyan("1.")} Open ${pc.bold("admin.config.ts")} and implement ${pc.bold("getCurrentUser")}
-  ${pc.cyan("2.")} Add resources to start generating permissions
-  ${pc.cyan("3.")} Mount ${pc.bold("<AdminRouter />")} in your App.tsx
-  ${pc.cyan("4.")} Run ${pc.bold("ron sync")} after any config changes
-
-  ${pc.dim("Docs:")} https://ron.dev
+  ${pc.cyan("1.")} Mount ${pc.bold("<RonRouter />")} in your main.tsx
+  ${pc.cyan("2.")} Implement ${pc.bold("getCurrentUser")} in admin.config.ts
+  ${pc.cyan("3.")} Run ${pc.bold("ron sync")} after config changes
+  ${pc.cyan("4.")} Visit ${pc.bold("/admin")} to see your panel
 ${pc.green("─────────────────────────────────────")}
 `);
+    }
   });

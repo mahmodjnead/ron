@@ -17,7 +17,7 @@ ${pc.blue("  ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══�
 program
   .name("ron")
   .description("Ron CLI — scaffold and manage your admin panel")
-  .version("0.0.1")
+  .version("0.1.0")
   .hook("preAction", () => {
     console.log(RON_ASCII);
   });

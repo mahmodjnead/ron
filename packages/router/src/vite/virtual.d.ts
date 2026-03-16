@@ -5,12 +5,14 @@ declare module "virtual:ron/routes" {
   export interface RouteEntry {
     path: string;
     component: ComponentType;
-    layout?: ComponentType<{ children: React.ReactNode }>;
     permission: string | null;
     isDynamic: boolean;
     params: string[];
   }
 
+  export const rootLayout:
+    | ComponentType<{ children: React.ReactNode }>
+    | undefined;
   export const routes: RouteEntry[];
   export default routes;
 }

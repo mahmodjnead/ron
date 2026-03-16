@@ -26,13 +26,13 @@ importers:
 
   apps/playground:
     dependencies:
-      '@ron/core':
+      '@ronjs/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@ron/router':
+      '@ronjs/router':
         specifier: workspace:*
         version: link:../../packages/router
-      '@ron/ui':
+      '@ronjs/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       lucide-react:
@@ -99,7 +99,7 @@ importers:
 
   packages/cli:
     dependencies:
-      '@ron/core':
+      '@ronjs/core':
         specifier: workspace:*
         version: link:../core
       commander:
@@ -145,10 +145,10 @@ importers:
 
   packages/router:
     dependencies:
-      '@ron/core':
+      '@ronjs/core':
         specifier: workspace:*
         version: link:../core
-      '@ron/ui':
+      '@ronjs/ui':
         specifier: workspace:*
         version: link:../ui
       react:
@@ -179,7 +179,7 @@ importers:
 
   packages/ui:
     dependencies:
-      '@ron/core':
+      '@ronjs/core':
         specifier: workspace:*
         version: link:../core
       '@tanstack/react-table':

@@ -22,7 +22,7 @@ const config: Options[] = [
     format: ["esm", "cjs"],
     dts: true,
     clean: false,
-    external: ["vite", "fs", "path", "@ron/core"],
+    external: ["vite", "fs", "path", "@ronjs/core"],
     outDir: "dist",
   },
 ];

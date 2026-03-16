@@ -1,31 +1,31 @@
 {
-  "name": "@ron/cli",
-  "version": "0.0.1",
-  "description": "Ron CLI — scaffold, generate, and manage your admin panel",
-  "bin": {
-    "ron": "./dist/index.js"
-  },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
-  },
-  "dependencies": {
-    "@ron/core": "workspace:*",
-    "commander": "^12.0.0",
-    "prompts": "^2.4.2",
-    "picocolors": "^1.0.0",
-    "fs-extra": "^11.2.0",
-    "tsx": "^4.7.0"
-  },
-  "devDependencies": {
-    "@types/prompts": "^2.4.9",
-    "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.0.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.4.0"
-  }
+    "name":  "@ronjs/cli",
+    "version":  "0.1.0",
+    "description":  "Ron CLI — scaffold, generate, and manage your admin panel",
+    "bin":  {
+                "ron":  "./dist/index.js"
+            },
+    "main":  "./dist/index.js",
+    "types":  "./dist/index.d.ts",
+    "scripts":  {
+                    "build":  "tsup",
+                    "dev":  "tsup --watch",
+                    "typecheck":  "tsc --noEmit",
+                    "clean":  "rm -rf dist"
+                },
+    "dependencies":  {
+                         "@ronjs/core":  "workspace:*",
+                         "commander":  "^12.0.0",
+                         "prompts":  "^2.4.2",
+                         "picocolors":  "^1.0.0",
+                         "fs-extra":  "^11.2.0",
+                         "tsx":  "^4.7.0"
+                     },
+    "devDependencies":  {
+                            "@types/prompts":  "^2.4.9",
+                            "@types/fs-extra":  "^11.0.4",
+                            "@types/node":  "^20.0.0",
+                            "tsup":  "^8.0.0",
+                            "typescript":  "^5.4.0"
+                        }
 }

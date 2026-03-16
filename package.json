@@ -1,6 +1,6 @@
 {
-  "name": "ron",
-  "version": "0.0.1",
+  "name": "ronjs",
+  "version": "0.1.0",
   "private": true,
   "description": "The Modern Headless Admin Framework",
   "scripts": {
