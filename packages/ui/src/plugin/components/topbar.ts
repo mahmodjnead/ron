@@ -1,4 +1,3 @@
-// src/plugin/components/topbar.ts
 export const topbarStyles = {
   ".ron-topbar": {
     height: "4rem",
@@ -7,35 +6,35 @@ export const topbarStyles = {
     justifyContent: "space-between",
     padding: "0 1rem",
     gap: "1rem",
-    backgroundColor: "rgb(var(--ron-surface))",
-    borderBottom: "1px solid rgb(var(--ron-border))",
+    backgroundColor: "var(--ron-surface)",
+    borderBottom: "1px solid var(--ron-border)",
     flexShrink: "0",
   },
   ".ron-topbar-title": {
     fontSize: "0.9375rem",
     fontWeight: "600",
-    color: "rgb(var(--ron-text))",
+    color: "var(--ron-text)",
   },
   ".ron-avatar": {
     width: "1.75rem",
     height: "1.75rem",
     borderRadius: "9999px",
-    backgroundColor: "rgb(var(--ron-primary))",
+    backgroundColor: "var(--ron-primary)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: "0",
     fontSize: "0.75rem",
     fontWeight: "600",
-    color: "rgb(var(--ron-primary-fg))",
+    color: "var(--ron-primary-fg)",
   },
   ".ron-dropdown": {
     position: "absolute",
     right: "0",
     top: "calc(100% + 0.25rem)",
     width: "12rem",
-    backgroundColor: "rgb(var(--ron-surface))",
-    border: "1px solid rgb(var(--ron-border))",
+    backgroundColor: "var(--ron-surface)",
+    border: "1px solid var(--ron-border)",
     borderRadius: "var(--ron-radius-lg)",
     boxShadow: "var(--ron-shadow-md)",
     zIndex: "50",
@@ -47,7 +46,7 @@ export const topbarStyles = {
     gap: "0.5rem",
     padding: "0.5rem 0.75rem",
     fontSize: "0.875rem",
-    color: "rgb(var(--ron-text))",
+    color: "var(--ron-text)",
     cursor: "pointer",
     border: "none",
     width: "100%",
@@ -55,13 +54,13 @@ export const topbarStyles = {
     backgroundColor: "transparent",
     transition: "background-color 150ms",
     "&:hover": {
-      backgroundColor: "rgb(var(--ron-surface-hover))",
+      backgroundColor: "var(--ron-surface-hover)",
     },
   },
   ".ron-dropdown-item-danger": {
-    color: "rgb(var(--ron-danger))",
+    color: "var(--ron-danger)",
     "&:hover": {
-      backgroundColor: "rgb(var(--ron-danger-bg))",
+      backgroundColor: "var(--ron-danger-bg)",
     },
   },
 };

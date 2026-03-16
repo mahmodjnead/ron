@@ -41,11 +41,16 @@ export function AdminLayout({
     .find((i) => i.path === currentPath);
 
   return (
-    <div className={cn("flex h-screen bg-gray-50 overflow-hidden", className)}>
+    <div
+      className={cn("flex h-screen overflow-hidden", className)}
+      style={{ backgroundColor: "var(--ron-bg)" }}
+      data-ron-root
+    >
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-20 bg-black/40 lg:hidden"
+          className="fixed inset-0 z-20 lg:hidden"
+          style={{ backgroundColor: "rgb(0 0 0 / 0.4)" }}
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -95,7 +100,11 @@ export function AdminLayout({
           actions={topBarActions}
         />
 
-        <main className="flex-1 overflow-y-auto">
+        {/* Page content */}
+        <main
+          className="flex-1 overflow-y-auto"
+          style={{ backgroundColor: "var(--ron-bg)" }}
+        >
           <div className="p-6">{children}</div>
         </main>
       </div>

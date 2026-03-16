@@ -34,62 +34,54 @@ export function SideNavItem({
   const isActive = item.path === currentPath;
   const badge = item.badge?.();
 
-  // ── Collapsed — icon only ─────────────────────────────
+  // ── Collapsed — icon only ───────────────────────────
   if (collapsed) {
+    const targetPath = item.path ?? item.children?.[0]?.path;
     return (
       <button
-        onClick={() => item.path && onNavigate(item.path)}
+        onClick={() => targetPath && onNavigate(targetPath)}
         title={item.label}
         className={cn(
-          "w-full flex items-center justify-center p-2 rounded-lg",
-          "transition-colors",
-          isActive || isChildActive
-            ? "bg-blue-50 text-blue-600"
-            : "text-gray-400 hover:bg-gray-100 hover:text-gray-700",
+          "ron-nav-item",
+          "w-full justify-center px-0 py-2",
+          (isActive || isChildActive) && "ron-nav-item-active",
         )}
       >
-        {item.icon ?? <div className="h-4 w-4 rounded-full bg-gray-300" />}
+        <span className="ron-nav-item-icon">
+          {item.icon ?? <div className="h-2 w-2 rounded-full bg-current" />}
+        </span>
       </button>
     );
   }
 
-  // ── Group item ────────────────────────────────────────
+  // ── Group item ──────────────────────────────────────
   if (hasChildren) {
     return (
       <div>
         <button
           onClick={() => setIsOpen((o) => !o)}
           className={cn(
-            "w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg",
-            "text-sm font-medium transition-colors",
-            isChildActive
-              ? "text-gray-900"
-              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+            "ron-nav-item w-full justify-between",
+            isChildActive && "ron-nav-item-active",
           )}
         >
           <div className="flex items-center gap-3">
             {item.icon && (
-              <span
-                className={cn(
-                  "flex-shrink-0",
-                  isChildActive ? "text-blue-600" : "text-gray-400",
-                )}
-              >
-                {item.icon}
-              </span>
+              <span className="ron-nav-item-icon">{item.icon}</span>
             )}
             <span>{item.label}</span>
           </div>
           <ChevronDown
             className={cn(
-              "h-4 w-4 text-gray-400 transition-transform duration-200",
+              "h-4 w-4 transition-transform duration-200",
+              "text-current opacity-50",
               isOpen && "rotate-180",
             )}
           />
         </button>
 
         {isOpen && (
-          <div className="mt-1 ml-4 pl-3 border-l border-gray-100 space-y-1">
+          <div className="ron-nav-group-children">
             {item.children!.map((child) => (
               <SideNavItem
                 key={child.path ?? child.label}
@@ -106,38 +98,21 @@ export function SideNavItem({
     );
   }
 
-  // ── Leaf item ─────────────────────────────────────────
+  // ── Leaf item ───────────────────────────────────────
   return (
     <button
       onClick={() => item.path && onNavigate(item.path)}
       className={cn(
-        "w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg",
-        "text-sm font-medium transition-colors text-left",
-        isActive
-          ? "bg-blue-50 text-blue-700"
-          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+        "ron-nav-item w-full",
+        isActive && "ron-nav-item-active",
+        depth > 0 && "text-sm",
       )}
     >
-      <div className="flex items-center gap-3">
-        {item.icon && (
-          <span
-            className={cn(
-              "flex-shrink-0",
-              isActive ? "text-blue-600" : "text-gray-400",
-            )}
-          >
-            {item.icon}
-          </span>
-        )}
-        <span>{item.label}</span>
-      </div>
+      {item.icon && <span className="ron-nav-item-icon">{item.icon}</span>}
+      <span className="flex-1 text-left">{item.label}</span>
 
       {badge !== null && badge !== undefined && badge > 0 && (
-        <span
-          className="ml-auto inline-flex items-center justify-center
-                         min-w-[20px] h-5 px-1.5 rounded-full
-                         bg-blue-100 text-blue-700 text-xs font-semibold"
-        >
+        <span className="ron-badge ron-badge-info ml-auto">
           {badge > 99 ? "99+" : badge}
         </span>
       )}

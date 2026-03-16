@@ -1,4 +1,3 @@
-// src/plugin/components/badge.ts
 export const badgeStyles = {
   ".ron-badge": {
     display: "inline-flex",
@@ -11,23 +10,23 @@ export const badgeStyles = {
     whiteSpace: "nowrap",
   },
   ".ron-badge-success": {
-    backgroundColor: "rgb(var(--ron-success-bg))",
-    color: "rgb(var(--ron-success-fg))",
+    backgroundColor: "var(--ron-success-bg)",
+    color: "var(--ron-success-fg)",
   },
   ".ron-badge-warning": {
-    backgroundColor: "rgb(var(--ron-warning-bg))",
-    color: "rgb(var(--ron-warning-fg))",
+    backgroundColor: "var(--ron-warning-bg)",
+    color: "var(--ron-warning-fg)",
   },
   ".ron-badge-danger": {
-    backgroundColor: "rgb(var(--ron-danger-bg))",
-    color: "rgb(var(--ron-danger-fg))",
+    backgroundColor: "var(--ron-danger-bg)",
+    color: "var(--ron-danger-fg)",
   },
   ".ron-badge-info": {
-    backgroundColor: "rgb(var(--ron-info-bg))",
-    color: "rgb(var(--ron-info-fg))",
+    backgroundColor: "var(--ron-info-bg)",
+    color: "var(--ron-info-fg)",
   },
   ".ron-badge-default": {
-    backgroundColor: "rgb(var(--ron-surface-hover))",
-    color: "rgb(var(--ron-text-secondary))",
+    backgroundColor: "var(--ron-surface-hover)",
+    color: "var(--ron-text-secondary)",
   },
 };

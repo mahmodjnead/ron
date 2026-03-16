@@ -1,6 +1,4 @@
-// src/plugin/components/button.ts
 export const buttonStyles = {
-  // Base
   ".ron-btn": {
     display: "inline-flex",
     alignItems: "center",
@@ -21,51 +19,47 @@ export const buttonStyles = {
       cursor: "not-allowed",
     },
     "&:focus-visible": {
-      outline: "2px solid rgb(var(--ron-border-focus))",
+      outline: "2px solid var(--ron-border-focus)",
       outlineOffset: "2px",
     },
   },
-
-  // Variants
   ".ron-btn-primary": {
-    backgroundColor: "rgb(var(--ron-primary))",
-    color: "rgb(var(--ron-primary-fg))",
+    backgroundColor: "var(--ron-primary)",
+    color: "var(--ron-primary-fg)",
     "&:hover:not(:disabled)": {
-      backgroundColor: "rgb(var(--ron-primary-hover))",
+      backgroundColor: "var(--ron-primary-hover)",
     },
   },
   ".ron-btn-secondary": {
-    backgroundColor: "rgb(var(--ron-secondary))",
-    color: "rgb(var(--ron-secondary-fg))",
+    backgroundColor: "var(--ron-secondary)",
+    color: "var(--ron-secondary-fg)",
     "&:hover:not(:disabled)": {
-      backgroundColor: "rgb(var(--ron-secondary-hover))",
+      backgroundColor: "var(--ron-secondary-hover)",
     },
   },
   ".ron-btn-outline": {
     backgroundColor: "transparent",
-    color: "rgb(var(--ron-primary))",
-    borderColor: "rgb(var(--ron-primary))",
+    color: "var(--ron-primary)",
+    borderColor: "var(--ron-primary)",
     "&:hover:not(:disabled)": {
-      backgroundColor: "rgb(var(--ron-surface-active))",
+      backgroundColor: "var(--ron-surface-active)",
     },
   },
   ".ron-btn-ghost": {
     backgroundColor: "transparent",
-    color: "rgb(var(--ron-text-secondary))",
+    color: "var(--ron-text-secondary)",
     "&:hover:not(:disabled)": {
-      backgroundColor: "rgb(var(--ron-surface-hover))",
-      color: "rgb(var(--ron-text))",
+      backgroundColor: "var(--ron-surface-hover)",
+      color: "var(--ron-text)",
     },
   },
   ".ron-btn-danger": {
-    backgroundColor: "rgb(var(--ron-danger))",
-    color: "rgb(var(--ron-danger-fg))",
+    backgroundColor: "var(--ron-danger)",
+    color: "var(--ron-danger-fg)",
     "&:hover:not(:disabled)": {
       opacity: "0.9",
     },
   },
-
-  // Sizes
   ".ron-btn-sm": {
     fontSize: "0.75rem",
     padding: "0.375rem 0.75rem",

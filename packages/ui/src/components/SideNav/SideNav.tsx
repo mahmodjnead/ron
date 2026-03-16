@@ -32,18 +32,14 @@ export function SideNav({
   return (
     <aside
       className={cn(
-        "flex flex-col h-full bg-white border-r border-gray-200",
-        "transition-all duration-300 overflow-hidden",
-        collapsed ? "w-16" : "w-64",
+        "ron-sidebar",
+        collapsed && "ron-sidebar-collapsed",
         className,
       )}
     >
       {/* Branding */}
       <div
-        className={cn(
-          "flex items-center h-16 border-b border-gray-200 flex-shrink-0",
-          collapsed ? "justify-center px-0" : "gap-3 px-4",
-        )}
+        className={cn("ron-sidebar-header", collapsed && "justify-center px-0")}
       >
         {branding?.logo ? (
           <img
@@ -53,28 +49,30 @@ export function SideNav({
           />
         ) : (
           <div
-            className="h-8 w-8 rounded-lg bg-blue-600
-                          flex items-center justify-center flex-shrink-0"
+            className="h-8 w-8 rounded-lg flex items-center
+                       justify-center flex-shrink-0"
+            style={{ backgroundColor: "var(--ron-primary)" }}
           >
-            <span className="text-white text-sm font-bold">
+            <span
+              className="text-sm font-bold"
+              style={{ color: "var(--ron-primary-fg)" }}
+            >
               {branding?.name?.[0] ?? "A"}
             </span>
           </div>
         )}
         {!collapsed && branding?.name && (
-          <span className="font-semibold text-gray-900 truncate">
+          <span
+            className="font-semibold truncate"
+            style={{ color: "var(--ron-text)" }}
+          >
             {branding.name}
           </span>
         )}
       </div>
 
       {/* Nav items */}
-      <nav
-        className={cn(
-          "flex-1 overflow-y-auto py-4 space-y-1",
-          collapsed ? "px-2" : "px-3",
-        )}
-      >
+      <nav className="ron-sidebar-nav">
         {items.map((item) => (
           <SideNavItem
             key={item.path ?? item.label}
@@ -88,26 +86,22 @@ export function SideNav({
 
       {/* Footer slot */}
       {footer && !collapsed && (
-        <div className="border-t border-gray-200 p-4 flex-shrink-0">
-          {footer}
-        </div>
+        <div className="ron-sidebar-footer">{footer}</div>
       )}
 
-      {/* Collapse toggle — bottom of sidebar */}
+      {/* Collapse toggle */}
       {onCollapse && (
         <div
           className={cn(
-            "border-t border-gray-200 flex-shrink-0",
-            collapsed ? "flex justify-center p-3" : "px-3 py-3",
+            "ron-sidebar-footer",
+            collapsed && "flex justify-center",
           )}
         >
           <button
             onClick={() => onCollapse(!collapsed)}
             className={cn(
-              "flex items-center gap-2 p-2 rounded-lg w-full",
-              "text-sm text-gray-500 hover:bg-gray-100",
-              "hover:text-gray-700 transition-colors",
-              collapsed && "justify-center w-auto",
+              "ron-btn ron-btn-ghost w-full gap-2",
+              collapsed && "w-auto px-2",
             )}
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
@@ -116,7 +110,7 @@ export function SideNav({
             ) : (
               <>
                 <PanelLeftClose className="h-4 w-4 flex-shrink-0" />
-                <span>Collapse</span>
+                <span className="text-sm">Collapse</span>
               </>
             )}
           </button>

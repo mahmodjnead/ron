@@ -1,11 +1,10 @@
-// src/plugin/components/sidebar.ts
 export const sidebarStyles = {
   ".ron-sidebar": {
     display: "flex",
     flexDirection: "column",
     height: "100%",
-    backgroundColor: "rgb(var(--ron-sidebar-bg))",
-    borderRight: "1px solid rgb(var(--ron-sidebar-border))",
+    backgroundColor: "var(--ron-sidebar-bg)",
+    borderRight: "1px solid var(--ron-sidebar-border)",
     transition: "width 300ms ease",
     overflow: "hidden",
     width: "var(--ron-sidebar-width)",
@@ -19,7 +18,7 @@ export const sidebarStyles = {
     height: "4rem",
     padding: "0 1rem",
     gap: "0.75rem",
-    borderBottom: "1px solid rgb(var(--ron-sidebar-border))",
+    borderBottom: "1px solid var(--ron-sidebar-border)",
     flexShrink: "0",
   },
   ".ron-sidebar-nav": {
@@ -32,7 +31,7 @@ export const sidebarStyles = {
   },
   ".ron-sidebar-footer": {
     flexShrink: "0",
-    borderTop: "1px solid rgb(var(--ron-sidebar-border))",
+    borderTop: "1px solid var(--ron-sidebar-border)",
     padding: "0.75rem",
   },
   ".ron-nav-item": {
@@ -43,7 +42,7 @@ export const sidebarStyles = {
     borderRadius: "var(--ron-radius)",
     fontSize: "0.875rem",
     fontWeight: "500",
-    color: "rgb(var(--ron-text-secondary))",
+    color: "var(--ron-text-secondary)",
     cursor: "pointer",
     transition: "all 150ms",
     border: "none",
@@ -51,31 +50,32 @@ export const sidebarStyles = {
     textAlign: "left",
     backgroundColor: "transparent",
     "&:hover": {
-      backgroundColor: "rgb(var(--ron-surface-hover))",
-      color: "rgb(var(--ron-text))",
+      backgroundColor: "var(--ron-surface-hover)",
+      color: "var(--ron-text)",
     },
   },
   ".ron-nav-item-active": {
-    backgroundColor: "rgb(var(--ron-surface-active))",
-    color: "rgb(var(--ron-primary))",
+    backgroundColor: "var(--ron-surface-active)",
+    color: "var(--ron-primary)",
     "&:hover": {
-      backgroundColor: "rgb(var(--ron-surface-active))",
+      backgroundColor: "var(--ron-surface-active)",
+      color: "var(--ron-primary)",
     },
   },
   ".ron-nav-item-icon": {
     flexShrink: "0",
     width: "1rem",
     height: "1rem",
-    color: "rgb(var(--ron-text-muted))",
+    color: "var(--ron-text-muted)",
   },
   ".ron-nav-item-active .ron-nav-item-icon": {
-    color: "rgb(var(--ron-primary))",
+    color: "var(--ron-primary)",
   },
   ".ron-nav-group-children": {
     marginTop: "0.25rem",
     marginLeft: "1rem",
     paddingLeft: "0.75rem",
-    borderLeft: "1px solid rgb(var(--ron-border))",
+    borderLeft: "1px solid var(--ron-border)",
     display: "flex",
     flexDirection: "column",
     gap: "0.25rem",

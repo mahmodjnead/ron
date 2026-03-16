@@ -1,5 +1,5 @@
 // src/components/DataTable/DataTable.tsx
-import React from "react";
+import React, { useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -10,16 +10,7 @@ import {
   type SortingState,
   type ColumnFiltersState,
 } from "@tanstack/react-table";
-import { useState } from "react";
-import {
-  ChevronUp,
-  ChevronDown,
-  ChevronsUpDown,
-  ChevronLeft,
-  ChevronRight,
-  Search,
-  Loader2,
-} from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { cn } from "../../utils/cn";
 import { renderCell } from "./cellRenderers";
 import { TableSkeleton } from "./TableSkeleton";
@@ -41,7 +32,6 @@ export function DataTable<TData extends object>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  // Enrich columns with Ron cell renderers
   const enrichedColumns = columns.map((col) => ({
     ...col,
     cell:
@@ -66,9 +56,7 @@ export function DataTable<TData extends object>({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: {
-      pagination: { pageSize },
-    },
+    initialState: { pagination: { pageSize } },
   });
 
   const { pageIndex, pageSize: currentPageSize } = table.getState().pagination;
@@ -82,22 +70,35 @@ export function DataTable<TData extends object>({
       <div className="flex items-center justify-between gap-4">
         {searchable && (
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
+              style={{ color: "var(--ron-text-muted)" }}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
             <input
               type="text"
               placeholder={searchPlaceholder}
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg
-                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         bg-white placeholder:text-gray-400"
+              className="ron-input pl-9"
             />
           </div>
         )}
 
-        {/* Background fetch indicator */}
         {isFetching && !isLoading && (
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div
+            className="flex items-center gap-2 text-sm"
+            style={{ color: "var(--ron-text-muted)" }}
+          >
             <Loader2 className="h-4 w-4 animate-spin" />
             Refreshing...
           </div>
@@ -105,17 +106,18 @@ export function DataTable<TData extends object>({
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border border-gray-200 overflow-hidden bg-white shadow-sm">
+      <div className="ron-table-wrapper">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table
+            className={cn("ron-table", onRowClick && "ron-table-clickable")}
+          >
             {/* Head */}
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     const canSort = header.column.getCanSort();
                     const sorted = header.column.getIsSorted();
-
                     return (
                       <th
                         key={header.id}
@@ -124,11 +126,7 @@ export function DataTable<TData extends object>({
                             ? header.column.getToggleSortingHandler()
                             : undefined
                         }
-                        className={cn(
-                          "px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider",
-                          canSort &&
-                            "cursor-pointer select-none hover:text-gray-700",
-                        )}
+                        className={cn(canSort && "cursor-pointer select-none")}
                       >
                         <div className="flex items-center gap-1.5">
                           {flexRender(
@@ -136,14 +134,12 @@ export function DataTable<TData extends object>({
                             header.getContext(),
                           )}
                           {canSort && (
-                            <span className="text-gray-400">
-                              {sorted === "asc" ? (
-                                <ChevronUp className="h-3.5 w-3.5" />
-                              ) : sorted === "desc" ? (
-                                <ChevronDown className="h-3.5 w-3.5" />
-                              ) : (
-                                <ChevronsUpDown className="h-3.5 w-3.5" />
-                              )}
+                            <span className="text-xs opacity-40">
+                              {sorted === "asc"
+                                ? "↑"
+                                : sorted === "desc"
+                                  ? "↓"
+                                  : "↕"}
                             </span>
                           )}
                         </div>
@@ -155,7 +151,7 @@ export function DataTable<TData extends object>({
             </thead>
 
             {/* Body */}
-            <tbody className="divide-y divide-gray-100">
+            <tbody>
               {isLoading ? (
                 <tr>
                   <td colSpan={columns.length} className="px-4 py-6">
@@ -166,7 +162,8 @@ export function DataTable<TData extends object>({
                 <tr>
                   <td
                     colSpan={columns.length}
-                    className="px-4 py-12 text-center text-gray-400 text-sm"
+                    className="px-4 py-12 text-center text-sm"
+                    style={{ color: "var(--ron-text-muted)" }}
                   >
                     {emptyMessage}
                   </td>
@@ -178,13 +175,9 @@ export function DataTable<TData extends object>({
                     onClick={
                       onRowClick ? () => onRowClick(row.original) : undefined
                     }
-                    className={cn(
-                      "transition-colors",
-                      onRowClick && "cursor-pointer hover:bg-blue-50",
-                    )}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-4 py-3 whitespace-nowrap">
+                      <td key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
@@ -200,16 +193,25 @@ export function DataTable<TData extends object>({
 
         {/* Pagination */}
         {!isLoading && totalRows > 0 && (
-          <div
-            className="flex items-center justify-between px-4 py-3
-                          border-t border-gray-200 bg-gray-50"
-          >
-            <p className="text-xs text-gray-500">
+          <div className="ron-table-footer">
+            <p
+              className="text-xs"
+              style={{ color: "var(--ron-text-muted)" }}
+            >
               Showing{" "}
-              <span className="font-medium text-gray-700">
+              <span
+                className="font-medium"
+                style={{ color: "var(--ron-text)" }}
+              >
                 {startRow}–{endRow}
               </span>{" "}
-              of <span className="font-medium text-gray-700">{totalRows}</span>{" "}
+              of{" "}
+              <span
+                className="font-medium"
+                style={{ color: "var(--ron-text)" }}
+              >
+                {totalRows}
+              </span>{" "}
               results
             </p>
 
@@ -217,14 +219,11 @@ export function DataTable<TData extends object>({
               <button
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
-                className="p-1.5 rounded-md text-gray-500 hover:bg-gray-200
-                           disabled:opacity-40 disabled:cursor-not-allowed
-                           transition-colors"
+                className="ron-btn ron-btn-ghost ron-btn-icon ron-btn-sm"
               >
-                <ChevronLeft className="h-4 w-4" />
+                ‹
               </button>
 
-              {/* Page numbers */}
               {Array.from({ length: table.getPageCount() }, (_, i) => i)
                 .filter(
                   (i) =>
@@ -243,7 +242,8 @@ export function DataTable<TData extends object>({
                   item === "..." ? (
                     <span
                       key={`ellipsis-${idx}`}
-                      className="px-2 text-gray-400 text-sm"
+                      className="px-2 text-sm"
+                      style={{ color: "var(--ron-text-muted)" }}
                     >
                       ...
                     </span>
@@ -252,11 +252,12 @@ export function DataTable<TData extends object>({
                       key={item}
                       onClick={() => table.setPageIndex(item as number)}
                       className={cn(
-                        "min-w-[32px] h-8 px-2 rounded-md text-sm transition-colors",
+                        "ron-btn ron-btn-sm",
                         pageIndex === item
-                          ? "bg-blue-600 text-white font-medium"
-                          : "text-gray-600 hover:bg-gray-200",
+                          ? "ron-btn-primary"
+                          : "ron-btn-ghost",
                       )}
+                      style={{ minWidth: "2rem" }}
                     >
                       {(item as number) + 1}
                     </button>
@@ -266,11 +267,9 @@ export function DataTable<TData extends object>({
               <button
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
-                className="p-1.5 rounded-md text-gray-500 hover:bg-gray-200
-                           disabled:opacity-40 disabled:cursor-not-allowed
-                           transition-colors"
+                className="ron-btn ron-btn-ghost ron-btn-icon ron-btn-sm"
               >
-                <ChevronRight className="h-4 w-4" />
+                ›
               </button>
             </div>
           </div>
