@@ -17,3 +17,11 @@ export { AdminLayout } from "./components/AdminLayout";
 export type { AdminLayoutProps } from "./components/AdminLayout";
 
 export { cn } from "./utils/cn";
+
+export { Can } from "./components/Can";
+export {
+  RonPermissionProvider,
+  useRonPermissions,
+  usePermission,
+  useRole,
+} from "./components/PermissionProvider";

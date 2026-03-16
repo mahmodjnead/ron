@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@ron/core": "workspace:*",
+    "@ron/ui": "workspace:*",
     "react-router-dom": "^6.0.0"
   },
   "peerDependencies": {

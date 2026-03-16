@@ -69,6 +69,22 @@ function findLayout(filePath: string, pagesDir: string): string | undefined {
 }
 
 /**
+ * Reads a page file and extracts the exported permission string.
+ * export const permission = "users:view"
+ */
+function extractPagePermission(filePath: string): string | undefined {
+  try {
+    const content = fs.readFileSync(filePath, "utf-8");
+    const match = content.match(
+      /export\s+const\s+permission\s*=\s*["']([^"']+)["']/,
+    );
+    return match?.[1];
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * Recursively scans a directory and returns all Ron routes.
  */
 export function scanPages(
@@ -110,7 +126,7 @@ export function scanPages(
       params,
       isIndex: name === "index",
       isLayout: false,
-      permission: undefined, // filled from config
+      permission: extractPagePermission(fullPath),
     });
   }
 

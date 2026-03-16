@@ -17,12 +17,14 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { RonLayout } from "./RonLayout";
 import { FirstValidRoute } from "./FirstValidRoute";
 import { ronHistory } from "../hooks/useRonHistory";
+import { RonPermissionProvider } from "@ron/ui";
 
 // ── Auth Context ──────────────────────────────────────────
 interface RonAuthContext {
   isAuthenticated: boolean;
   isLoading: boolean;
   permissions: string[];
+  role?: string;
 }
 
 const AuthCtx = createContext<RonAuthContext>({
@@ -73,85 +75,91 @@ export function RonRouter({
 
   return (
     <AuthCtx.Provider value={auth}>
-      <BrowserRouter>
-        <RouteTracker />
-        <Routes>
-          {/* Root redirect → first valid route */}
-          // Replace the routes section in RonRouter.tsx
-          {/* Root redirect — only renders after routes load */}
-          <Route
-            path={basePath}
-            element={
-              <FirstValidRoute
-                routes={routes}
-                permissions={auth.permissions}
-                basePath={basePath}
-              />
-            }
-          />
-          <Route
-            path={`${basePath}/`}
-            element={
-              <FirstValidRoute
-                routes={routes}
-                permissions={auth.permissions}
-                basePath={basePath}
-              />
-            }
-          />
-          {/* Generated routes */}
-          {routes.map((route) => (
+      <RonPermissionProvider
+        permissions={auth.permissions}
+        role={auth.role ?? ""}
+      >
+        <BrowserRouter>
+          <RouteTracker />
+          <Routes>
+            {/* Root redirect → first valid route */}
+            // Replace the routes section in RonRouter.tsx
+            {/* Root redirect — only renders after routes load */}
             <Route
-              key={route.path}
-              path={route.path}
+              path={basePath}
               element={
-                <ProtectedRoute
-                  permission={route.permission}
-                  userPermissions={auth.permissions}
-                  isLoading={auth.isLoading}
-                  isAuthenticated={auth.isAuthenticated}
-                >
-                  <RonLayout layout={route.layout}>
-                    <Suspense fallback={<PageLoader />}>
-                      <route.component />
-                    </Suspense>
-                  </RonLayout>
-                </ProtectedRoute>
+                <FirstValidRoute
+                  routes={routes}
+                  permissions={auth.permissions}
+                  basePath={basePath}
+                />
               }
             />
-          ))}
-          {/* 403 fallback */}
-          <Route
-            path={`${basePath}/403`}
-            element={
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "60vh",
-                  gap: "1rem",
-                }}
-              >
-                <h1
+            <Route
+              path={`${basePath}/`}
+              element={
+                <FirstValidRoute
+                  routes={routes}
+                  permissions={auth.permissions}
+                  basePath={basePath}
+                />
+              }
+            />
+            {/* Generated routes */}
+            {routes.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={
+                  <ProtectedRoute
+                    permission={route.permission}
+                    userPermissions={auth.permissions}
+                    isLoading={auth.isLoading}
+                    isAuthenticated={auth.isAuthenticated}
+                  >
+                    <RonLayout layout={route.layout}>
+                      <Suspense fallback={<PageLoader />}>
+                        <route.component />
+                      </Suspense>
+                    </RonLayout>
+                  </ProtectedRoute>
+                }
+              />
+            ))}
+            {/* 403 fallback */}
+            <Route
+              path={`${basePath}/403`}
+              element={
+                <div
                   style={{
-                    fontSize: "3rem",
-                    fontWeight: 700,
-                    color: "var(--ron-text-muted)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "60vh",
+                    gap: "1rem",
                   }}
                 >
-                  403
-                </h1>
-                <p style={{ color: "var(--ron-text-secondary)" }}>
-                  You don't have permission to access this page.
-                </p>
-              </div>
-            }
-          />
-          {children}
-        </Routes>
-      </BrowserRouter>
+                  <h1
+                    style={{
+                      fontSize: "3rem",
+                      fontWeight: 700,
+                      color: "var(--ron-text-muted)",
+                    }}
+                  >
+                    403
+                  </h1>
+                  <p style={{ color: "var(--ron-text-secondary)" }}>
+                    You don't have permission to access this
+                    paonPermissionProvider{" "}
+                  </p>
+                </div>
+              }
+            />
+            {children}
+          </Routes>
+        </BrowserRouter>
+      </RonPermissionProvider>
     </AuthCtx.Provider>
   );
 }
