@@ -1,6 +1,6 @@
 {
     "name": "@ronjs/core",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "Ron core — type system, defineConfig, permission resolver",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",

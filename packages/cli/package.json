@@ -1,6 +1,6 @@
 {
   "name": "@ronjs/cli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Ron CLI — scaffold, generate, and manage your admin panel",
   "bin": {
     "ron": "./dist/index.js"
