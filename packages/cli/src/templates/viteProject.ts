@@ -46,7 +46,7 @@ export const packageJsonTemplate = (projectName: string, pm: string) =>
         "@types/react-dom": "^19.0.0",
         "@vitejs/plugin-react": "^4.0.0", // ← v4 works with Vite 5/6/7
         tailwindcss: "^4.0.0",
-        typescript: "^5.4.0",
+        typescript: "^5.9.0",
         vite: "^6.0.0", // ← pin to v6, stable
       },
     },

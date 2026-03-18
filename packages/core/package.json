@@ -23,7 +23,7 @@
     "devDependencies": {
         "@vitest/ui": "^4.1.0",
         "tsup": "^8.0.0",
-        "typescript": "^5.4.0",
+        "typescript": "^5.9.0",
         "vitest": "^4.1.0"
     }
 }
