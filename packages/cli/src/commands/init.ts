@@ -67,6 +67,13 @@ function getRunCmd(pm: string, script: string): string {
 export const initCommand = new Command("init")
   .description("Initialize Ron — create a new project or add to existing")
   .option("--cwd <path>", "Working directory", process.cwd())
+  .option("--projectName <name>", "Project name")
+  .option("--roles <roles>", "Comma-separated roles")
+  .option("--auth <provider>", "Auth provider (clerk, next-auth, supabase, custom)")
+  .option("--pm <manager>", "Package manager (npm, pnpm, yarn, bun)")
+  .option("--template <name>", "Template (minimal, full)")
+  .option("--git", "Initialize git repository")
+  .option("--no-git", "Do not initialize git repository")
   .action(async (options) => {
     const cwd = path.resolve(options.cwd);
     const isEmpty = isFolderEmpty(cwd);
@@ -83,13 +90,13 @@ export const initCommand = new Command("init")
     const shared = await prompts(
       [
         {
-          type: "text",
+          type: options.projectName ? null : "text",
           name: "projectName",
           message: "Project name?",
           initial: path.basename(cwd) || "my-admin",
         },
         {
-          type: "text",
+          type: options.roles ? null : "text",
           name: "roles",
           message: "Define your roles (comma separated)",
           initial: "super_admin, admin, editor, viewer",
@@ -97,7 +104,7 @@ export const initCommand = new Command("init")
             v.trim().length > 0 || "At least one role is required",
         },
         {
-          type: "select",
+          type: options.auth ? null : "select",
           name: "auth",
           message: "Auth provider?",
           choices: [
@@ -116,19 +123,20 @@ export const initCommand = new Command("init")
       },
     );
 
-    const projectName = shared.projectName as string;
-    const roles = (shared.roles as string)
+    const projectName = (options.projectName || shared.projectName) as string;
+    const rolesInput = (options.roles || shared.roles) as string;
+    const roles = rolesInput
       .split(",")
       .map((r: string) => r.trim())
       .filter(Boolean);
-    const auth = shared.auth as string;
+    const auth = (options.auth || shared.auth) as string;
 
     // ── CREATE mode — new project ────────────────────────
     if (isEmpty) {
       const createAnswers = await prompts(
         [
           {
-            type: "select",
+            type: options.pm ? null : "select",
             name: "pm",
             message: "Package manager?",
             choices: [
@@ -139,7 +147,7 @@ export const initCommand = new Command("init")
             ],
           },
           {
-            type: "select",
+            type: options.template ? null : "select",
             name: "template",
             message: "Template?",
             choices: [
@@ -156,7 +164,7 @@ export const initCommand = new Command("init")
             ],
           },
           {
-            type: "confirm",
+            type: options.git !== undefined ? null : "confirm",
             name: "git",
             message: "Initialize git repository?",
             initial: true,
@@ -170,9 +178,10 @@ export const initCommand = new Command("init")
         },
       );
 
-      const pm = createAnswers.pm as string;
-      const template = createAnswers.template as string;
-      const git = createAnswers.git as boolean;
+      const pm = (options.pm || createAnswers.pm) as string;
+      const template = (options.template || createAnswers.template) as string;
+      const git =
+        options.git !== undefined ? options.git : createAnswers.git;
 
       console.log("");
       console.log(pc.dim("Scaffolding project..."));
@@ -394,6 +403,7 @@ ${pc.green("──────────────────────�
       // Scaffold pages
       const pagesDir = path.join(cwd, project.srcDir, "admin", "pages");
       await fs.ensureDir(path.join(pagesDir, "dashboard"));
+      await fs.ensureDir(path.join(pagesDir, "_403"));
       await fs.writeFile(
         path.join(pagesDir, "_layout.tsx"),
         rootLayoutTemplate(projectName),
@@ -417,12 +427,14 @@ ${pc.green("──────────────────────�
       if (cssFiles.length > 0) {
         const cssPath = cssFiles[0]!;
         const cssContent = await fs.readFile(cssPath, "utf-8");
-        if (!cssContent.includes("@ronjs/ui")) {
+        if (!cssContent.includes("@ronjs/ui/css")) {
           await fs.writeFile(
             cssPath,
-            cssContent.trimEnd() + '\n@plugin "@ronjs/ui";\n',
+            cssContent.trimEnd() + '\n@import "@ronjs/ui/css";\n',
           );
-          console.log(pc.green("✔") + " @plugin added to index.css");
+          console.log(
+            pc.green("✔") + ' @import "@ronjs/ui/css" added to index.css',
+          );
         }
       }
 
@@ -440,7 +452,7 @@ ${pc.green("──────────────────────�
       }
 
       // Add ron.d.ts
-      await fs.writeFile(path.join(cwd, "src", "ron.d.ts"), ronDtsTemplate());
+      await fs.writeFile(path.join(cwd, project.srcDir, "ron.d.ts"), ronDtsTemplate());
 
       console.log(`
 ${pc.green("─────────────────────────────────────")}

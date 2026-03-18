@@ -135,7 +135,7 @@ export default defineConfig({
 `;
 
 export const indexCssTemplate = () => `@import "tailwindcss";
-@plugin "@ronjs/ui";
+@import "@ronjs/ui/css";
 `;
 
 export const mainTsxTemplate = (

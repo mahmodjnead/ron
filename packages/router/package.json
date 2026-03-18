@@ -1,43 +1,43 @@
 {
-    "name":  "@ronjs/router",
-    "version":  "0.1.0",
-    "description":  "Ron Router — file-based routing for React admin panels",
-    "main":  "./dist/index.js",
-    "module":  "./dist/index.mjs",
-    "types":  "./dist/index.d.ts",
-    "exports":  {
-                    ".":  {
-                              "types":  "./dist/index.d.ts",
-                              "import":  "./dist/index.mjs",
-                              "require":  "./dist/index.js"
-                          },
-                    "./vite":  {
-                                   "types":  "./dist/vite.d.ts",
-                                   "import":  "./dist/vite.mjs",
-                                   "require":  "./dist/vite.js"
-                               }
-                },
-    "scripts":  {
-                    "build":  "tsup",
-                    "dev":  "tsup --watch",
-                    "typecheck":  "tsc --noEmit",
-                    "clean":  "rm -rf dist"
-                },
-    "dependencies":  {
-                         "@ronjs/core":  "workspace:*",
-                         "@ronjs/ui":  "workspace:*",
-                         "react-router-dom":  "^6.0.0"
-                     },
-    "peerDependencies":  {
-                             "react":  "\u003e=18",
-                             "react-dom":  "\u003e=18",
-                             "vite":  "\u003e=5"
-                         },
-    "devDependencies":  {
-                            "@types/react":  "^19.0.0",
-                            "@types/node":  "^20.0.0",
-                            "tsup":  "^8.0.0",
-                            "typescript":  "^5.4.0",
-                            "vite":  "^7.0.0"
-                        }
+  "name": "@ronjs/router",
+  "version": "0.1.2",
+  "description": "Ron Router — file-based routing for React admin panels",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.mjs",
+      "require": "./dist/vite.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@ronjs/core": "^0.1.0",
+    "@ronjs/ui": "^0.1.0",
+    "react-router-dom": "^6.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "vite": ">=5"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vite": "^7.0.0"
+  }
 }

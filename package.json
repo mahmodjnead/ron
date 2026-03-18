@@ -8,6 +8,8 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
+    "test": "pnpm -r test",
+    "test:watch": "pnpm -r test:watch",
     "clean": "turbo run clean"
   },
   "devDependencies": {

@@ -1,25 +1,29 @@
 {
-    "name":  "@ronjs/core",
-    "version":  "0.1.0",
-    "description":  "Ron core — type system, defineConfig, permission resolver",
-    "main":  "./dist/index.js",
-    "module":  "./dist/index.mjs",
-    "types":  "./dist/index.d.ts",
-    "exports":  {
-                    ".":  {
-                              "types":  "./dist/index.d.ts",
-                              "import":  "./dist/index.mjs",
-                              "require":  "./dist/index.js"
-                          }
-                },
-    "scripts":  {
-                    "build":  "tsup src/index.ts --format esm,cjs --dts",
-                    "dev":  "tsup src/index.ts --format esm,cjs --dts --watch",
-                    "typecheck":  "tsc --noEmit",
-                    "clean":  "rm -rf dist"
-                },
-    "devDependencies":  {
-                            "tsup":  "^8.0.0",
-                            "typescript":  "^5.4.0"
-                        }
+    "name": "@ronjs/core",
+    "version": "0.1.2",
+    "description": "Ron core — type system, defineConfig, permission resolver",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        }
+    },
+    "scripts": {
+        "build": "tsup src/index.ts --format esm,cjs --dts",
+        "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+        "typecheck": "tsc --noEmit",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "clean": "rm -rf dist"
+    },
+    "devDependencies": {
+        "@vitest/ui": "^4.1.0",
+        "tsup": "^8.0.0",
+        "typescript": "^5.4.0",
+        "vitest": "^4.1.0"
+    }
 }
